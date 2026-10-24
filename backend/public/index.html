@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>SmartDesk | Soporte</title>
+  <link rel="stylesheet" href="/styles.css">
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="container">
+      <p class="brand">Smart<span>Desk</span></p>
+      <p class="subtitle">Centro de soporte inteligente</p>
+    </div>
+  </header>
+
+  <main class="container main-content">
+    <section class="intro" aria-labelledby="page-title">
+      <p class="eyebrow">ASISTENCIA</p>
+      <h1 id="page-title">¿En qué podemos ayudarte?</h1>
+      <p>Cuéntanos qué necesitas. Analizaremos tu solicitud
+         para facilitar su clasificación y gestión.</p>
+    </section>
+
+    <div class="layout">
+      <section class="panel" aria-labelledby="form-title">
+        <h2 id="form-title">Nueva solicitud</h2>
+        <p class="muted">Completa los siguientes campos.</p>
+
+        <form id="support-form">
+          <div class="field">
+            <label for="subject">Asunto</label>
+            <input
+              id="subject"
+              name="subject"
+              type="text"
+              maxlength="120"
+              required
+              autocomplete="off"
+              placeholder="Ej.: Problema al iniciar sesión">
+          </div>
+
+          <div class="field">
+            <label for="description">Descripción</label>
+            <textarea
+              id="description"
+              name="description"
+              rows="6"
+              maxlength="2000"
+              required
+              aria-describedby="description-hint"
+              placeholder="Describe lo que está ocurriendo."></textarea>
+            <p id="description-hint" class="hint">Máximo 2000 caracteres.</p>
+          </div>
+
+          <button id="submit-button" type="submit">
+            Enviar solicitud
+          </button>
+        </form>
+
+        <p id="form-status" class="status" role="status"
+           aria-live="polite" aria-atomic="true"></p>
+      </section>
+
+      <section class="panel result-panel" aria-labelledby="result-title">
+        <p class="eyebrow">RESULTADO</p>
+        <h2 id="result-title" tabindex="-1">Análisis de la solicitud</h2>
+
+        <p id="result-placeholder" class="muted">
+          Aquí aparecerá el análisis cuando envíes una solicitud.
+        </p>
+
+        <div id="result-content" hidden>
+          <p class="result-label">Categoría</p>
+          <p id="result-category" class="result-value"></p>
+
+          <p class="result-label">Prioridad</p>
+          <p id="result-priority" class="result-value"></p>
+
+          <p class="result-label">Resumen</p>
+          <p id="result-summary" class="result-value summary"></p>
+        </div>
+      </section>
+    </div>
+
+    <p class="footer-note">
+      Prototipo de recepción y análisis de solicitudes.
+    </p>
+  </main>
+</body>
+</html>

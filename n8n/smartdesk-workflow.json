@@ -1,0 +1,152 @@
+{
+  "name": "SmartDesk - Recepción con Gemini (borrador)",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "support-request",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "a97f25d1-6a3d-4c3b-95e8-0f24d2e1a701",
+      "name": "Recibir solicitud de soporte",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        240,
+        300
+      ],
+      "webhookId": "a97f25d1-6a3d-4c3b-95e8-0f24d2e1a701"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c1a3d3be-4e5f-4c17-8f5a-5b6a4d3c2e10",
+              "name": "mensaje",
+              "value": "Solicitud recibida por SmartDesk",
+              "type": "string"
+            },
+            {
+              "id": "c2a3d3be-4e5f-4c17-8f5a-5b6a4d3c2e11",
+              "name": "datosRecibidos",
+              "value": "={{ $json.body }}",
+              "type": "object"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "b87f25d1-6a3d-4c3b-95e8-0f24d2e1a702",
+      "name": "Preparar respuesta",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        500,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ \"Clasifica esta solicitud de soporte: \" + JSON.stringify($json.datosRecibidos || $json) + \". Devuelve únicamente JSON válido con las claves category, priority y summary. category debe ser access, technical_error, query u other; priority debe ser low, medium o high; summary debe ser un resumen breve en español. No inventes datos.\" }}",
+        "hasOutputParser": false
+      },
+      "id": "4dfec2e0-c17c-4e19-a303-d3372006ede0",
+      "name": "Analizar solicitud con Gemini",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        560,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-3.1-flash-lite",
+        "options": {
+          "temperature": 0.2,
+          "maxOutputTokens": 400
+        }
+      },
+      "id": "f2725b00-b70b-4ca6-bf9c-43cb3f21e30c",
+      "name": "Modelo Gemini SmartDesk",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.2,
+      "position": [
+        560,
+        260
+      ],
+      "credentials": {
+        "googlePalmApi": {
+          "name": "Gemini - SmartDesk"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const original = $('Preparar respuesta').first().json;\nconst raw = String($json.text ?? $json.response ?? $json.output ?? '');\nlet analysis;\ntry {\n  const cleaned = raw.replace(/^```(?:json)?\\s*/i, '').replace(/\\s*```$/, '').trim();\n  analysis = JSON.parse(cleaned);\n} catch (error) {\n  analysis = { category: 'other', priority: 'low', summary: raw.slice(0, 500), parseOk: false };\n}\nif (!['access', 'technical_error', 'query', 'other'].includes(analysis.category)) analysis.category = 'other';\nif (!['low', 'medium', 'high'].includes(analysis.priority)) analysis.priority = 'low';\nif (typeof analysis.summary !== 'string') analysis.summary = String(analysis.summary ?? '');\nreturn { json: { mensaje: original.mensaje, datosRecibidos: original.datosRecibidos, analisisIA: analysis } };"
+      },
+      "id": "cc9f9d69-bee7-496f-95a4-057a5934330c",
+      "name": "Normalizar resultado Gemini",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        840,
+        0
+      ]
+    }
+  ],
+  "connections": {
+    "Recibir solicitud de soporte": {
+      "main": [
+        [
+          {
+            "node": "Preparar respuesta",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Preparar respuesta": {
+      "main": [
+        [
+          {
+            "node": "Analizar solicitud con Gemini",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analizar solicitud con Gemini": {
+      "main": [
+        [
+          {
+            "node": "Normalizar resultado Gemini",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Modelo Gemini SmartDesk": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Analizar solicitud con Gemini",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "active": false
+}

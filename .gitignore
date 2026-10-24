@@ -1,0 +1,52 @@
+# Dependencias
+node_modules/
+
+# Compilación y cobertura
+backend/dist/
+backend/coverage/
+*.tsbuildinfo
+
+# Cliente Prisma generado (se regenera con `npm install` → postinstall → prisma generate)
+backend/generated/prisma/
+
+# Variables de entorno locales (nunca versionar secretos)
+.env
+.env.*
+*.env
+
+# Herramientas locales de asistentes de IA (skills de terceros y junctions de Windows).
+# El proyecto no depende de ellas para instalarse, compilarse ni ejecutarse.
+backend/.agents/
+backend/.claude/
+backend/.windsurf/
+backend/skills-lock.json
+.claude/settings.local.json
+
+# Exportaciones de n8n: solo se publica la copia saneada.
+# Las exportaciones completas contienen metadatos de la instancia y datos personales.
+n8n/*.json
+!n8n/smartdesk-workflow.json
+
+# Diagnósticos y material de trabajo archivado
+/_archivo/
+/diagnostico/
+/*.cjs
+
+# Registros
+logs/
+*.log
+npm-debug.log*
+
+# Temporales y archivos del sistema
+tmp/
+temp/
+*.tmp
+*.bak
+*.swp
+.DS_Store
+Thumbs.db
+
+# Excepciones: plantillas de entorno sin secretos.
+# Deben ir al final para que ninguna regla anterior las anule.
+!.env.example
+!backend/.env.example
